@@ -108,8 +108,8 @@ saits = SAITS(
     d_v       = 64,
     d_ffn     = 128,
     dropout   = 0.1,
-    epochs    = 200,
-    patience  = 5,                  # early-stop patience (optional)
+    epochs    = 2000,
+    #patience  = 5,                  # early-stop patience (optional)
     #device    = "cpu"
     device    = "cuda:0"
 )
