@@ -110,8 +110,8 @@ saits = SAITS(
     dropout   = 0.1,
     epochs    = 200,
     patience  = 5,                  # early-stop patience (optional)
-    device    = "cpu"
-    #device    = "cuda:0"
+    #device    = "cpu"
+    device    = "cuda:0"
 )
 
 saits.fit(train_set, val_set)
