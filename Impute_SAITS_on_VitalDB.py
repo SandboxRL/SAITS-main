@@ -134,8 +134,9 @@ BATCH_SIZE = 256              # tweak until it fits (128, 64, …)
 
 orig_imputed_parts = []
 for i in range(0, len(orig_concat), BATCH_SIZE):
-    chunk = {"X": orig_concat[i : i + BATCH_SIZE]}
-    imputed_chunk = saits.impute(chunk, batch_size=BATCH_SIZE)   # GPU OK
+    chunk_dict = {"X": orig_concat[i : i + BATCH_SIZE]}
+    # call impute() with *just* the data dict
+    imputed_chunk = saits.impute(chunk_dict)      # no batch_size kwarg
     orig_imputed_parts.append(imputed_chunk)
 
 orig_imputed = np.concatenate(orig_imputed_parts, axis=0)
