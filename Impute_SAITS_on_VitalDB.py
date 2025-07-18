@@ -123,7 +123,7 @@ saits = SAITS(
 
 # saits.save("models/saits_vitaldb.pypots", overwrite=True)
 # Load the model back
-saits = saits.load("models/saits_vitaldb.pypots")
+saits = SAITS.load("models/saits_vitaldb.pypots", device="cuda:0")
 
 ## IMPUTE THE ORIGINAL DATA  (train + val + test, NaNs only)
 

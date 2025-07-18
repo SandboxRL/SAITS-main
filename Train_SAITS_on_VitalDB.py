@@ -122,53 +122,54 @@ mae        = calc_mae(imputation, np.nan_to_num(test_X_ori), indicating_mask)
 print("MAE on held-out values:", mae)
 
 saits.save("models/saits_vitaldb.pypots", overwrite=True)
-saits.load("models/saits_vitaldb.pypots")
+# Load the model back
+# saits.load("models/saits_vitaldb.pypots")
 
-## IMPUTE THE ORIGINAL DATA  (train + val + test, NaNs only)
+# ## IMPUTE THE ORIGINAL DATA  (train + val + test, NaNs only)
 
-# Concatenate all three splits so we fill every real gap in one go
-orig_concat = np.concatenate([train_X, val_X_ori, test_X_ori], axis=0)
-orig_imputed = saits.impute({"X": orig_concat})        # <-- returns np.ndarray
+# # Concatenate all three splits so we fill every real gap in one go
+# orig_concat = np.concatenate([train_X, val_X_ori, test_X_ori], axis=0)
+# orig_imputed = saits.impute({"X": orig_concat})        # <-- returns np.ndarray
 
-# You can now split it back if you want
-n_train = train_X.shape[0]
-n_val   = val_X_ori.shape[0]
-imputed_train = orig_imputed[:n_train]
-imputed_val_full = orig_imputed[n_train:n_train+n_val]  # val set with real NaNs filled
-imputed_test  = orig_imputed[n_train+n_val:]
+# # You can now split it back if you want
+# n_train = train_X.shape[0]
+# n_val   = val_X_ori.shape[0]
+# imputed_train = orig_imputed[:n_train]
+# imputed_val_full = orig_imputed[n_train:n_train+n_val]  # val set with real NaNs filled
+# imputed_test  = orig_imputed[n_train+n_val:]
 
-## IMPUTE THE SYNTHETICALLY MASKED VALIDATION SET
+# ## IMPUTE THE SYNTHETICALLY MASKED VALIDATION SET
 
-# val_X has *extra* 10 % MCAR holes; we already built val_set = {"X": val_X}
-imputed_val_masked = saits.impute(val_set)              # same shape as val_X
-# evaluate MAE on those artificial holes
-masked_mae = calc_mae(imputed_val_masked, 
-                      np.nan_to_num(val_X_ori), 
-                      np.isnan(val_X) ^ np.isnan(val_X_ori))
-print("MAE on synthetically missing points in val set:", masked_mae)
+# # val_X has *extra* 10 % MCAR holes; we already built val_set = {"X": val_X}
+# imputed_val_masked = saits.impute(val_set)              # same shape as val_X
+# # evaluate MAE on those artificial holes
+# masked_mae = calc_mae(imputed_val_masked, 
+#                       np.nan_to_num(val_X_ori), 
+#                       np.isnan(val_X) ^ np.isnan(val_X_ori))
+# print("MAE on synthetically missing points in val set:", masked_mae)
 
-## SHOW 15 RANDOM IMPUTATIONS vs. GROUND-TRUTH
+# ## SHOW 15 RANDOM IMPUTATIONS vs. GROUND-TRUTH
 
-import random, pandas as pd
+# import random, pandas as pd
 
-feature_names = track_keep                        # your 7 channels in that order
-mask_idx = np.where((np.isnan(val_X)) & ~np.isnan(val_X_ori))  # positions you hid
-n_show = min(30, mask_idx[0].size)               # show up to 15 rows
-rows = random.sample(range(mask_idx[0].size), n_show)
+# feature_names = track_keep                        # your 7 channels in that order
+# mask_idx = np.where((np.isnan(val_X)) & ~np.isnan(val_X_ori))  # positions you hid
+# n_show = min(30, mask_idx[0].size)               # show up to 15 rows
+# rows = random.sample(range(mask_idx[0].size), n_show)
 
-print(mask_idx)
-records = []
-for k in rows:
-    s, t, f = mask_idx[0][k], mask_idx[1][k], mask_idx[2][k]
-    records.append({
-        "sample#":    s,
-        "time_step":  t,
-        "channel":    feature_names[f],
-        "ground_truth": float(val_X_ori[s, t, f]),
-        "imputed":     float(imputed_val_masked[s, t, f]),
-        "abs_error":   abs(val_X_ori[s, t, f] - imputed_val_masked[s, t, f]),
-    })
+# print(mask_idx)
+# records = []
+# for k in rows:
+#     s, t, f = mask_idx[0][k], mask_idx[1][k], mask_idx[2][k]
+#     records.append({
+#         "sample#":    s,
+#         "time_step":  t,
+#         "channel":    feature_names[f],
+#         "ground_truth": float(val_X_ori[s, t, f]),
+#         "imputed":     float(imputed_val_masked[s, t, f]),
+#         "abs_error":   abs(val_X_ori[s, t, f] - imputed_val_masked[s, t, f]),
+#     })
 
-comparison_df = pd.DataFrame(records)
-print("\n===  SAITS imputation on synthetic holes (random 30)  ===")
-print(comparison_df.round(3).to_string(index=False))
+# comparison_df = pd.DataFrame(records)
+# print("\n===  SAITS imputation on synthetic holes (random 30)  ===")
+# print(comparison_df.round(3).to_string(index=False))
