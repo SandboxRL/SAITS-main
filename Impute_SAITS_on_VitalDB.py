@@ -141,6 +141,22 @@ for i in range(0, len(orig_concat), BATCH_SIZE):
 
 orig_imputed = np.concatenate(orig_imputed_parts, axis=0)
 
+# Saving the imputed data in a pandas DataFrame
+n_samples, n_steps, n_features = orig_imputed.shape
+feature_names = track_keep                       # length = n_features
+time_index    = np.arange(n_steps)               # 0 … 599  (10-min window)
+# reshape (samples × steps, features)
+flat = orig_imputed.reshape(-1, n_features)
+# build hierarchical index: (sample#, time_step)
+multi_idx = pd.MultiIndex.from_product(
+    [range(n_samples), time_index],
+    names=["sample", "t"]
+)
+imputed_df = pd.DataFrame(flat, index=multi_idx, columns=feature_names)
+print(imputed_df.head())
+
+imputed_df.to_csv("imputed_vitaldb.csv", index=False)
+
 # You can now split it back if you want
 n_train = train_X.shape[0]
 n_val   = val_X_ori.shape[0]
