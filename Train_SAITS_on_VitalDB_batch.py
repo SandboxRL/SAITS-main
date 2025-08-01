@@ -55,7 +55,13 @@ def train_and_impute(arr: np.ndarray, out_prefix: Path):
     saits.fit({"X": tr}, {"X": va, "X_ori": va_ori})
 
     # --- full imputation ---
-    imputed = saits.impute({"X": seg})      # ndarray (n_seg, 600, 7)
+    # imputed = saits.impute({"X": seg})      # ndarray (n_seg, 600, 7)
+    BATCH_SIZE = 256                     # shrink if it still OOMs
+    imputed_parts = []
+    for i in range(0, len(seg), BATCH_SIZE):
+        part = {"X": seg[i : i + BATCH_SIZE]}
+        imputed_parts.append(saits.impute(part))     # GPU OK
+    imputed = np.concatenate(imputed_parts, axis=0)
 
     # reshape back into one long series
     flat = imputed.reshape(-1, imputed.shape[-1])[:len(arr)]
