@@ -21,7 +21,9 @@ def get_timestamp_index(vital_path: Path):
     return df.index[:len(df)]    # align index with same length as df
 
 def patch_csv_with_timestamp(csv_path: Path):
-    vital_path = csv_path.with_suffix(".vital")
+    stem_without_imputed = csv_path.stem.replace("_imputed", "")
+    vital_path = csv_path.with_name(stem_without_imputed + ".vital")
+
     if not vital_path.exists():
         print(f"❌ No matching .vital for {csv_path.name}")
         return
