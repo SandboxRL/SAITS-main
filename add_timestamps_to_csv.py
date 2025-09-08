@@ -32,9 +32,13 @@ def patch_csv_with_timestamp(csv_path: Path):
     try:
         df_csv = pd.read_csv(csv_path)
         ts_index = get_timestamp_index(vital_path)
-        if len(df_csv) != len(ts_index):
-            print(f"⚠️  Row mismatch in {csv_path.name} (CSV: {len(df_csv)}, Vital: {len(ts_index)})")
+        
+        if len(df_csv) > len(ts_index):
+            print(f"⚠️  CSV has MORE rows than VitalDB file ({csv_path.name}); skipping.")
             return
+        elif len(df_csv) < len(ts_index):
+            print(f"ℹ️  Trimming timestamps to match CSV rows for {csv_path.name}")
+            ts_index = ts_index[:len(df_csv)]  # take only as many as needed
 
         df_csv.insert(0, "timestamp", ts_index)
         df_csv.to_csv(csv_path, index=False)
