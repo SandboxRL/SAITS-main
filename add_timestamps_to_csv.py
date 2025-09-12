@@ -33,10 +33,10 @@ def patch_csv_with_timestamp(csv_path: Path):
     # Load imputed CSV
     try:
         df_csv = pd.read_csv(csv_path)
-        # Skip if 'timestamp' already exists
-        if "timestamp" in df_csv.columns:
-            print(f"⏭️  Skipping {csv_path.name} (already has timestamp)")
-            return
+        # # Skip if 'timestamp' already exists
+        # if "timestamp" in df_csv.columns:
+        #     print(f"⏭️  Skipping {csv_path.name} (already has timestamp)")
+        #     return
         ts_index = get_timestamp_index(vital_path)
         
         if len(df_csv) > len(ts_index):
