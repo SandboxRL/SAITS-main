@@ -18,7 +18,9 @@ def get_timestamp_index(vital_path: Path):
         return_datetime=True,     # crucial for real timestamps
         return_pandas=True,
     )
-    return df.index[:len(df)]    # align index with same length as df
+    # return df.index[:len(df)]    # align index with same length as df (wrong)
+    # Return actual datetime values as a Series
+    return pd.Series(df.index[:len(df)], name="timestamp")
 
 def patch_csv_with_timestamp(csv_path: Path):
     stem_without_imputed = csv_path.stem.replace("_imputed", "")
