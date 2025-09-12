@@ -37,6 +37,11 @@ def patch_csv_with_timestamp(csv_path: Path):
         # if "timestamp" in df_csv.columns:
         #     print(f"⏭️  Skipping {csv_path.name} (already has timestamp)")
         #     return
+        # ✅ Remove existing timestamp column if it exists
+        if "timestamp" in df_csv.columns:
+            print(f"↻  Overwriting existing timestamp in {csv_path.name}")
+            df_csv = df_csv.drop(columns=["timestamp"])
+            
         ts_index = get_timestamp_index(vital_path)
         
         if len(df_csv) > len(ts_index):
