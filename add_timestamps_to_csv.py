@@ -20,7 +20,13 @@ def get_timestamp_index(vital_path: Path):
     )
     # return df.index[:len(df)]    # align index with same length as df (wrong)
     # Return actual datetime values as a Series
-    return pd.Series(df.index[:len(df)], name="timestamp")
+    ts_series = pd.Series(df.index[:len(df)], name="timestamp")
+
+    # 🖨️ Print first 5 timestamps for inspection
+    print(f"📅 First 5 timestamps from {vital_path.name}:")
+    print(ts_series.head())
+
+    return ts_series
 
 def patch_csv_with_timestamp(csv_path: Path):
     stem_without_imputed = csv_path.stem.replace("_imputed", "")
