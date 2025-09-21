@@ -14,7 +14,8 @@ def get_timestamp_index(vital_path: Path):
     # Read only a known datetime-carrying track like SNUADC/ART
     df = vdb.vital_recs(
         str(vital_path),
-        track_names=["SNUADC/ART"],
+        # track_names=["SNUADC/ART"],
+        track_names=TRACK_KEEP,
         return_timestamp=False,
         return_datetime=True,
         return_pandas=True,
