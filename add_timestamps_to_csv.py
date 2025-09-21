@@ -10,19 +10,23 @@ TRACK_KEEP = ["SNUADC/ART ", "SNUADC/ECG_II", "SNUADC/ECG_V5 ",
 ROOT = Path("~/vitaldb_bulk/physionet.org/vital_files").expanduser()
 
 def get_timestamp_index(vital_path: Path):
-    """Returns datetime index from .vital file."""
+    """Returns datetime values from 'Time' column in the .vital file."""
+    # Read only a known datetime-carrying track like SNUADC/ART
     df = vdb.vital_recs(
         str(vital_path),
-        track_names=TRACK_KEEP,
+        track_names=["SNUADC/ART"],
         return_timestamp=False,
-        return_datetime=True,     # crucial for real timestamps
+        return_datetime=True,
         return_pandas=True,
     )
-    # return df.index[:len(df)]    # align index with same length as df (wrong)
-    # Return actual datetime values as a Series
-    ts_series = pd.Series(df.index[:len(df)], name="timestamp")
 
-    # 🖨️ Print first 5 timestamps for inspection
+    # Use the 'Time' column, which contains datetime values
+    if "Time" not in df.columns:
+        raise ValueError(f"'Time' column missing in {vital_path.name}")
+
+    ts_series = pd.Series(df["Time"].values, name="timestamp")
+
+    # 🖨️ Print first 5 datetime values
     print(f"📅 First 5 timestamps from {vital_path.name}:")
     print(ts_series.head())
 
